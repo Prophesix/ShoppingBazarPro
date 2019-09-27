@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="01041078-2365-43c1-aefb-28e686c543cb" >
+		<http:request-connection port="8091" />
+	</http:request-config>
+	<http:request-config name="HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="8fed483c-03f8-4261-a06d-881f69884605" >
+		<http:request-connection port="8092" />
+	</http:request-config>
+	<flow name="getBoth" doc:id="a78ee604-e852-4c4c-ba81-571cf732709c" >
+		<scatter-gather doc:name="Scatter-Gather" doc:id="78790edf-bcc9-4bec-8c6c-14f5f838e630" >
+			<route >
+				<http:request method="GET" doc:name="getAmazonXMLFormat" doc:id="49b0d643-6fb0-4da6-95b3-7813a59b23f4" config-ref="HTTP_Request_configuration"/>
+			</route>
+			<route >
+				<http:request method="GET" doc:name="getBestBuyJSONFormat" doc:id="48d24d0d-b799-4f1f-bb82-add2e74077ad" config-ref="HTTP_Request_configuration1"/>
+			</route>
+		</scatter-gather>
+		<ee:transform doc:name="Transform Message" doc:id="a4be3f13-e9e8-4c17-8541-519fdfc64971" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

@@ -1,0 +1,52 @@
+#%RAML 1.0
+title: Shopping Bazar Pro
+version: 1.0
+baseUri: api
+types:
+ # Fullinventory: !include datatypes/FullInventory.raml
+
+/search/items:
+  get:
+    displayName: Search all items
+    description: Get all inventory items regardless of what store the it belongs to.
+    responses:
+      200:
+       body:
+          application/json: 
+#           type: Fullinventory[]
+/item/{item_id}:
+      get:
+        displayName: Get Item
+        description: Gets specific item from a specific store.
+        responses:
+          200:
+            body:
+              application/json: 
+   #             type: Fullinventory
+      put:
+        displayName:  Update Item
+        description:  Update existing item
+        responses:
+          201:
+            body:
+              application/json:
+                example: |
+                  message: item has been updated
+      delete:
+        displayName: Delete Item
+        description: Delete existing item.
+        responses:
+          204:
+            body:
+              application/json:
+                examples:
+                  message: item has been delted
+      post:
+        displayName: Add Item
+        description: Create a new item for a given store.
+        body:
+          application/json:             
+        responses:
+          201:
+            body:
+              application/json:
