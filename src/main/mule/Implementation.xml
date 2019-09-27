@@ -11,15 +11,17 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	<http:request-config name="HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="8fed483c-03f8-4261-a06d-881f69884605" >
 		<http:request-connection port="8092" />
 	</http:request-config>
-	<flow name="getBoth" doc:id="a78ee604-e852-4c4c-ba81-571cf732709c" >
+	<flow name="getAllItems" doc:id="a78ee604-e852-4c4c-ba81-571cf732709c" >
+		<logger level="INFO" doc:name="Logger" doc:id="49f6406a-88fe-44c1-bd19-3eeacea0ec09" message="Starting GetAllItems flow."/>
 		<scatter-gather doc:name="Scatter-Gather" doc:id="78790edf-bcc9-4bec-8c6c-14f5f838e630" >
 			<route >
-				<http:request method="GET" doc:name="getAmazonXMLFormat" doc:id="49b0d643-6fb0-4da6-95b3-7813a59b23f4" config-ref="HTTP_Request_configuration"/>
+				<http:request method="GET" doc:name="getAmazonXMLFormat" doc:id="49b0d643-6fb0-4da6-95b3-7813a59b23f4" config-ref="HTTP_Request_configuration" sendCorrelationId="ALWAYS"/>
 			</route>
 			<route >
-				<http:request method="GET" doc:name="getBestBuyJSONFormat" doc:id="48d24d0d-b799-4f1f-bb82-add2e74077ad" config-ref="HTTP_Request_configuration1"/>
+				<http:request method="GET" doc:name="getBestBuyJSONFormat" doc:id="48d24d0d-b799-4f1f-bb82-add2e74077ad" config-ref="HTTP_Request_configuration1" sendCorrelationId="ALWAYS"/>
 			</route>
 		</scatter-gather>
+		<logger level="DEBUG" doc:name="Logger" doc:id="93d6afb9-46bd-47cc-af87-eb7a68c7d04b" message="#[payload]"/>
 		<ee:transform doc:name="Transform Message" doc:id="a4be3f13-e9e8-4c17-8541-519fdfc64971" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
@@ -29,5 +31,6 @@ output application/java
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="5558afff-ee20-4132-bfe7-8084a335ee51" message="Ending GetAllItems flow."/>
 	</flow>
 </mule>
