@@ -25,12 +25,12 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 		<ee:transform doc:name="Transform Message" doc:id="a4be3f13-e9e8-4c17-8541-519fdfc64971" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
-output application/java
+output application/json
 ---
-{
-}]]></ee:set-payload>
+flatten (payload..payload1)]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		<logger level="DEBUG" doc:name="Logger" doc:id="31f35cf8-0bba-4a0d-b7e1-a0d71026b247" message="#[payload]"/>
 		<logger level="INFO" doc:name="Logger" doc:id="5558afff-ee20-4132-bfe7-8084a335ee51" message="Ending GetAllItems flow."/>
 	</flow>
 </mule>
