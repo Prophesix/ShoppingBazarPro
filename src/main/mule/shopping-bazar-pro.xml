@@ -124,55 +124,63 @@ output application/json
         </error-handler>
     </flow>
     <flow name="put:\item\(item_id):shopping-bazar-pro-config">
-        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core">
+        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" doc:id="719b1266-e406-46d1-8358-1adb0a94a624">
             <ee:variables>
-                <ee:set-variable variableName="item_id">attributes.uriParams.'item_id'</ee:set-variable>
+                <ee:set-variable variableName="item_id"><![CDATA[attributes.uriParams.'item_id']]></ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+        <set-variable value="#[attributes.uriParams.'item_id']" doc:name="Set ItemID" doc:id="9770d131-4e32-497b-a681-a59c4bb54e3e" variableName="ItemID"/>
+		<flow-ref doc:name="callUpdateItem" doc:id="dd840505-4631-4d26-a80f-1408b1500f3f" name="updateItem(Put)"/>
+		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="62a38d0a-1fef-46b5-8e32-42df8c5aa9d0">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {
-  message: "item has been updated"
+  message: "Item has been updated"
 }]]></ee:set-payload>
             </ee:message>
         </ee:transform>
     </flow>
     <flow name="delete:\item\(item_id):shopping-bazar-pro-config">
-        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core">
+        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" doc:id="311ebf5e-7fae-4931-99d4-921df70471c6">
             <ee:variables>
-                <ee:set-variable variableName="item_id">attributes.uriParams.'item_id'</ee:set-variable>
+                <ee:set-variable variableName="item_id"><![CDATA[attributes.uriParams.'item_id']]></ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+        <set-variable value="#[attributes.uriParams.'item_id']" doc:name="Set ItemID" doc:id="17b2a3cf-3aa0-4501-b7d9-c2c18fa8e90f" variableName="ItemID"/>
+		<flow-ref doc:name="callRemoveItem" doc:id="118bb335-e6fc-47cb-871d-78cd488e8672" name="removeItem(Delete)"/>
+		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="af61ece5-dd2e-4783-b386-c7c23083edfa">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-"item has been delted"]]></ee:set-payload>
+"Item has been deleted"]]></ee:set-payload>
             </ee:message>
         </ee:transform>
     </flow>
     <flow name="get:\item\(item_id):shopping-bazar-pro-config">
-        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core">
+        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" doc:id="33e6213e-8ffe-4c34-a42e-51552945651a">
             <ee:variables>
-                <ee:set-variable variableName="item_id">attributes.uriParams.'item_id'</ee:set-variable>
+                <ee:set-variable variableName="item_id"><![CDATA[attributes.uriParams.'item_id']]></ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <logger level="INFO" message="get:\item\(item_id):shopping-bazar-pro-config" />
-    </flow>
-    <flow name="get:\search\items:shopping-bazar-pro-config">
-        <flow-ref doc:name="Flow Reference" doc:id="28bae76c-65ce-4960-ab3c-cfbdb36c991e" name="getAllItems"/>
-		<logger level="INFO" message="get:\search\items:shopping-bazar-pro-config" />
+        <set-variable value="#[attributes.uriParams.'item_id']" doc:name="Set ItemID" doc:id="b5b938f4-9376-4a4b-9a6d-7516c3e001ed" variableName="ItemID"/>
+		<flow-ref doc:name="callGetItemByID" doc:id="d8776afa-dc7f-47f8-aec7-2edd68b87a37" name="getItemByID"/>
+		<logger level="INFO" message="get:\item\(item_id):shopping-bazar-pro-config" />
     </flow>
     <flow name="post:\item\(item_id):shopping-bazar-pro-config">
-        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core">
+        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" doc:id="746ad3ac-d942-45dd-ab67-74b8efce4e4e">
             <ee:variables>
-                <ee:set-variable variableName="item_id">attributes.uriParams.'item_id'</ee:set-variable>
+                <ee:set-variable variableName="item_id"><![CDATA[attributes.uriParams.'item_id']]></ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <logger level="INFO" message="post:\item\(item_id):shopping-bazar-pro-config" />
+        <set-variable value="#[attributes.uriParams.'item_id']" doc:name="Set Variable" doc:id="bee9f6b5-ca95-4d34-842a-ed3d56e7aac6" variableName="ItemID" />
+		<flow-ref doc:name="callAddNewItem" doc:id="26d6e859-5d61-45ff-aed7-b0db248871c0" name="addNewItem(Post)" />
+		<logger level="INFO" message="post:\item\(item_id):shopping-bazar-pro-config" />
+    </flow>
+	<flow name="get:\search\items:shopping-bazar-pro-config">
+        <flow-ref doc:name="Flow Reference" doc:id="28bae76c-65ce-4960-ab3c-cfbdb36c991e" name="getAllItems"/>
+		<logger level="INFO" message="get:\search\items:shopping-bazar-pro-config" />
     </flow>
 </mule>
