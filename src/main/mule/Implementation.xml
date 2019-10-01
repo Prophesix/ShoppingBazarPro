@@ -37,10 +37,22 @@ flatten (payload..payload1)]]></ee:set-payload>
 		<logger level="INFO" doc:name="beginGetItemByID" doc:id="445e93bd-7c27-43d9-b0ea-2659f05ac79d" message="Start of get item by ID."/>
 		<choice doc:name="Choice" doc:id="355d663e-9cb2-46d8-8cc8-fbaa4d9eb503" >
 			<when expression="ItemID &gt;=100">
-				<http:request method="GET" doc:name="getFromAmazon" doc:id="8e34fc95-ff5c-4c3b-bc7b-18cb91883113" config-ref="AmazonDBEndpoint"/>
+				<http:request method="GET" doc:name="getFromAmazon" doc:id="8e34fc95-ff5c-4c3b-bc7b-18cb91883113" config-ref="AmazonDBEndpoint">
+					<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	itemID : attributes.uriParams.'item_id'
+}]]]></http:uri-params>
+				</http:request>
 			</when>
 			<otherwise >
-				<http:request method="GET" doc:name="getFromBestBuy" doc:id="f713179c-5461-4460-98e4-ccbeba2164a3" config-ref="BestBuyDBEndpoint"/>
+				<http:request method="GET" doc:name="getFromBestBuy" doc:id="f713179c-5461-4460-98e4-ccbeba2164a3" config-ref="BestBuyDBEndpoint">
+					<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	itemID : attributes.uriParams.'item_id'
+}]]]></http:uri-params>
+				</http:request>
 			</otherwise>
 		</choice>
 		<logger level="DEBUG" doc:name="Payload Details [Debug]" doc:id="3923a07b-4a20-46c1-a231-8b33a1ec77e0" message="#[payload]"/>
@@ -50,10 +62,22 @@ flatten (payload..payload1)]]></ee:set-payload>
 		<logger level="INFO" doc:name="beginPutItem" doc:id="da7f3108-3c2b-42d3-8ba5-fe3ea5d9ed8a" message="Begin of put item flow."/>
 		<choice doc:name="Choice" doc:id="824539bc-6996-4ab1-a1c9-d51f8412e824" >
 			<when expression="ItemID &gt;=100" >
-				<http:request method="PUT" doc:name="putOnAmazon" doc:id="a7709f38-589f-42e7-8015-245696c9caa6" config-ref="AmazonDBEndpoint" />
+				<http:request method="PUT" doc:name="putOnAmazon" doc:id="a7709f38-589f-42e7-8015-245696c9caa6" config-ref="AmazonDBEndpoint" >
+					<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	itemID : attributes.uriParams.'item_id'
+}]]]></http:uri-params>
+				</http:request>
 			</when>
 			<otherwise >
-				<http:request method="PUT" doc:name="putOnBestBuy" doc:id="9747b5c9-3452-4722-8573-ec63990d1672" config-ref="BestBuyDBEndpoint" />
+				<http:request method="PUT" doc:name="putOnBestBuy" doc:id="9747b5c9-3452-4722-8573-ec63990d1672" config-ref="BestBuyDBEndpoint" >
+					<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	itemID : attributes.uriParams.'item_id'
+}]]]></http:uri-params>
+				</http:request>
 			</otherwise>
 		</choice>
 		<logger level="DEBUG" doc:name="Payload Details [Debug]" doc:id="4e9d4381-3020-4575-aa25-71d7459e87f5" message="#[payload]"/>
@@ -63,10 +87,22 @@ flatten (payload..payload1)]]></ee:set-payload>
 		<logger level="INFO" doc:name="beginDeleteItem" doc:id="fdaf6130-aa2a-4bf0-80b2-3afc0905016a" message="Starting of delete item."/>
 		<choice doc:name="Choice" doc:id="f407e36f-6241-47a9-9cc5-fd9aa6b0c3dc" >
 			<when expression="ItemID &gt;=100" >
-				<http:request method="DELETE" doc:name="deleteFromAmazon" doc:id="e1b226fe-ae3d-42f8-9391-bf39e7722a67" config-ref="AmazonDBEndpoint" />
+				<http:request method="DELETE" doc:name="deleteFromAmazon" doc:id="e1b226fe-ae3d-42f8-9391-bf39e7722a67" config-ref="AmazonDBEndpoint" >
+					<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	itemID : attributes.uriParams.'item_id'
+}]]]></http:uri-params>
+				</http:request>
 			</when>
 			<otherwise >
-				<http:request method="DELETE" doc:name="deleteFromBestBuy" doc:id="f9ec94a9-9b76-4691-bbf0-3e0778a0a5d0" config-ref="BestBuyDBEndpoint" />
+				<http:request method="DELETE" doc:name="deleteFromBestBuy" doc:id="f9ec94a9-9b76-4691-bbf0-3e0778a0a5d0" config-ref="BestBuyDBEndpoint" >
+					<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	itemID : attributes.uriParams.'item_id'
+}]]]></http:uri-params>
+				</http:request>
 			</otherwise>
 		</choice>
 		<logger level="INFO" doc:name="Payload Details [Debug]" doc:id="46532a84-79ea-470b-8948-c893e8553c66" />
@@ -75,11 +111,23 @@ flatten (payload..payload1)]]></ee:set-payload>
 	<flow name="addNewItem(Post)" doc:id="3b909061-f6e5-4b1a-869a-ae9e91e70eb0" >
 		<logger level="INFO" doc:name="beginAddNewItem" doc:id="538e220f-5ea6-4387-89c7-a499f03af39b" message="Starting to add a new item."/>
 		<choice doc:name="Choice" doc:id="0cda254b-6283-42ad-8324-43e555df55a6">
-			<when expression="ItemID &gt;=100">
-				<http:request method="POST" doc:name="addNewItemToAmazon" doc:id="59035ce6-be41-4bab-a97c-dabf0e890701" config-ref="AmazonDBEndpoint" />
+			<when expression="#[attributes.uriParams.'item_id' &gt;=100]">
+				<http:request method="POST" doc:name="addNewItemToAmazon" doc:id="59035ce6-be41-4bab-a97c-dabf0e890701" config-ref="AmazonDBEndpoint" >
+					<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	itemID : attributes.uriParams.'item_id'
+}]]]></http:uri-params>
+				</http:request>
 			</when>
 			<otherwise>
-				<http:request method="POST" doc:name="addNewItemToBestBuy" doc:id="62f60141-cdf7-421c-b51a-279f059ffacf" config-ref="BestBuyDBEndpoint" />
+				<http:request method="POST" doc:name="addNewItemToBestBuy" doc:id="62f60141-cdf7-421c-b51a-279f059ffacf" config-ref="BestBuyDBEndpoint" >
+					<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	itemID : attributes.uriParams.'item_id'
+}]]]></http:uri-params>
+				</http:request>
 			</otherwise>
 		</choice>
 		<logger level="DEBUG" doc:name="Payload Details [Debug]" doc:id="24f5c66c-81fd-4064-b9ba-a9d135e9f702" message="#[payload]"/>
