@@ -1,23 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd ">
-    <http:listener-config name="shopping-bazar-pro-httpListenerConfig">
+    <http:listener-config name="Interface_EntryPoint">
         <http:listener-connection host="0.0.0.0" port="8082" />
     </http:listener-config>
     <apikit:config name="shopping-bazar-pro-config" api="shopping-bazar-pro.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
     <flow name="shopping-bazar-pro-main">
-        <http:listener config-ref="shopping-bazar-pro-httpListenerConfig" path="/api/*">
+        <http:listener config-ref="Interface_EntryPoint" path="/api/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
                 <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:response>
             <http:error-response statusCode="#[vars.httpStatus default 500]">
-                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:body><![CDATA[#[output application/json ---
+ {
+    "error.description": error.description,
+    "error.type": error.errorType,   
+    "error.exceptionClass": error.exception.class
+ }]]]></http:body>
                 <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:error-response>
         </http:listener>
         <apikit:router config-ref="shopping-bazar-pro-config" />
         <error-handler>
-            <on-error-propagate type="APIKIT:BAD_REQUEST">
-                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <on-error-propagate type="APIKIT:BAD_REQUEST" enableNotifications="true" logException="true">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="3173c313-86cf-401a-8e27-b2cc05c8724b">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -25,11 +30,11 @@ output application/json
 {message: "Bad request"}]]></ee:set-payload>
                     </ee:message>
                     <ee:variables>
-                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[400]]></ee:set-variable>
                     </ee:variables>
                 </ee:transform>
             </on-error-propagate>
-            <on-error-propagate type="APIKIT:NOT_FOUND">
+            <on-error-propagate type="APIKIT:NOT_FOUND" enableNotifications="true" logException="true">
                 <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
@@ -42,7 +47,7 @@ output application/json
                     </ee:variables>
                 </ee:transform>
             </on-error-propagate>
-            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED" enableNotifications="true" logException="true">
                 <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
@@ -55,7 +60,7 @@ output application/json
                     </ee:variables>
                 </ee:transform>
             </on-error-propagate>
-            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE" enableNotifications="true" logException="true">
                 <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
@@ -68,7 +73,7 @@ output application/json
                     </ee:variables>
                 </ee:transform>
             </on-error-propagate>
-            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE" enableNotifications="true" logException="true">
                 <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
@@ -81,7 +86,7 @@ output application/json
                     </ee:variables>
                 </ee:transform>
             </on-error-propagate>
-            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED" enableNotifications="true" logException="true">
                 <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
@@ -97,18 +102,18 @@ output application/json
         </error-handler>
     </flow>
     <flow name="shopping-bazar-pro-console">
-        <http:listener config-ref="shopping-bazar-pro-httpListenerConfig" path="/console/*">
+        <http:listener config-ref="Interface_EntryPoint" path="/console/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
-                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:response>
             <http:error-response statusCode="#[vars.httpStatus default 500]">
-                <http:body>#[payload]</http:body>
-                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:error-response>
         </http:listener>
         <apikit:console config-ref="shopping-bazar-pro-config" />
         <error-handler>
-            <on-error-propagate type="APIKIT:NOT_FOUND">
+            <on-error-propagate type="APIKIT:NOT_FOUND" enableNotifications="true" logException="true">
                 <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
                     <ee:message>
                         <ee:set-payload><![CDATA[%dw 2.0
@@ -123,60 +128,5 @@ output application/json
             </on-error-propagate>
         </error-handler>
     </flow>
-    <flow name="put:\item\(item_id):shopping-bazar-pro-config">
-        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" doc:id="719b1266-e406-46d1-8358-1adb0a94a624">
-            <ee:variables>
-                <ee:set-variable variableName="item_id"><![CDATA[attributes.uriParams.'item_id']]></ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-		<flow-ref doc:name="callUpdateItem" doc:id="dd840505-4631-4d26-a80f-1408b1500f3f" name="updateItem(Put)" target="ItemID" targetValue="#[attributes.uriParams.'item_id']"/>
-		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="62a38d0a-1fef-46b5-8e32-42df8c5aa9d0">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  message: "Item has been updated"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
-    </flow>
-    <flow name="delete:\item\(item_id):shopping-bazar-pro-config">
-        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" doc:id="311ebf5e-7fae-4931-99d4-921df70471c6">
-            <ee:variables>
-                <ee:set-variable variableName="item_id"><![CDATA[attributes.uriParams.'item_id']]></ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-		<flow-ref doc:name="callRemoveItem" doc:id="118bb335-e6fc-47cb-871d-78cd488e8672" name="removeItem(Delete)" targetValue="#[attributes.uriParams.'item_id']" target="itemID"/>
-		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="af61ece5-dd2e-4783-b386-c7c23083edfa">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-"Item has been deleted"]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
-    </flow>
-    <flow name="get:\item\(item_id):shopping-bazar-pro-config">
-        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" doc:id="33e6213e-8ffe-4c34-a42e-51552945651a">
-            <ee:variables>
-                <ee:set-variable variableName="item_id"><![CDATA[attributes.uriParams.'item_id']]></ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-		<flow-ref doc:name="callGetItemByID" doc:id="d8776afa-dc7f-47f8-aec7-2edd68b87a37" name="getItemByID" target="itemID" targetValue="#[attributes.uriParams.'item_id']"/>
-		<logger level="INFO" message="get:\item\(item_id):shopping-bazar-pro-config" />
-    </flow>
-    <flow name="post:\item\(item_id):shopping-bazar-pro-config">
-        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" doc:id="746ad3ac-d942-45dd-ab67-74b8efce4e4e">
-            <ee:variables>
-                <ee:set-variable variableName="item_id"><![CDATA[attributes.uriParams.'item_id']]></ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-		<flow-ref doc:name="callAddNewItem" doc:id="26d6e859-5d61-45ff-aed7-b0db248871c0" name="addNewItem(Post)" target="itemID" targetValue="#[attributes.uriParams.'item_id']"/>
-		<logger level="INFO" message="post:\item\(item_id):shopping-bazar-pro-config" />
-    </flow>
-	<flow name="get:\search\items:shopping-bazar-pro-config">
-        <flow-ref doc:name="Flow Reference" doc:id="28bae76c-65ce-4960-ab3c-cfbdb36c991e" name="getAllItems"/>
-		<logger level="INFO" message="get:\search\items:shopping-bazar-pro-config" />
-    </flow>
+    
 </mule>

@@ -1,136 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
-	xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-	<http:request-config name="AmazonDBEndpoint" doc:name="HTTP Request configuration" doc:id="01041078-2365-43c1-aefb-28e686c543cb" >
-		<http:request-connection port="8091" />
-	</http:request-config>
-	<http:request-config name="BestBuyDBEndpoint" doc:name="HTTP Request configuration" doc:id="8fed483c-03f8-4261-a06d-881f69884605" >
-		<http:request-connection port="8092" />
-	</http:request-config>
-	<flow name="getAllItems" doc:id="a78ee604-e852-4c4c-ba81-571cf732709c" >
-		<logger level="INFO" doc:name="beginGetAllItemsFlow" doc:id="49f6406a-88fe-44c1-bd19-3eeacea0ec09" message="Starting GetAllItems flow."/>
-		<scatter-gather doc:name="Scatter-Gather" doc:id="78790edf-bcc9-4bec-8c6c-14f5f838e630" >
-			<route >
-				<http:request method="GET" doc:name="getAmazonXMLFormat" doc:id="49b0d643-6fb0-4da6-95b3-7813a59b23f4" config-ref="AmazonDBEndpoint" sendCorrelationId="ALWAYS"/>
-			</route>
-			<route >
-				<http:request method="GET" doc:name="getBestBuyJSONFormat" doc:id="48d24d0d-b799-4f1f-bb82-add2e74077ad" config-ref="BestBuyDBEndpoint" sendCorrelationId="ALWAYS"/>
-			</route>
-		</scatter-gather>
-		<logger level="DEBUG" doc:name="Payload Details [Debug]" doc:id="93d6afb9-46bd-47cc-af87-eb7a68c7d04b" message="#[payload]"/>
-		<ee:transform doc:name="Transform Message" doc:id="a4be3f13-e9e8-4c17-8541-519fdfc64971" >
+	<flow name="put:\item\(item_id):shopping-bazar-pro-config">
+		<ee:transform doc:name="Transform Message" doc:id="139b9e69-0ee6-4aef-a2ca-712baf954b55" >
 			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+				<ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-flatten (payload..payload1)]]></ee:set-payload>
+message.attributes.uriParams.'item_id' as Number]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<logger level="DEBUG" doc:name="Payload Details [Debug]" doc:id="31f35cf8-0bba-4a0d-b7e1-a0d71026b247" message="#[payload]"/>
-		<logger level="INFO" doc:name="endGetAllItems" doc:id="5558afff-ee20-4132-bfe7-8084a335ee51" message="Ending GetAllItems flow."/>
-	</flow>
-	<flow name="getItemByID" doc:id="660dc39a-9267-45df-81b8-3621a04b07a3">
-		<logger level="INFO" doc:name="beginGetItemByID" doc:id="445e93bd-7c27-43d9-b0ea-2659f05ac79d" message="Start of get item by ID."/>
-		<choice doc:name="Choice" doc:id="355d663e-9cb2-46d8-8cc8-fbaa4d9eb503" >
-			<when expression="ItemID &gt;=100">
-				<http:request method="GET" doc:name="getFromAmazon" doc:id="8e34fc95-ff5c-4c3b-bc7b-18cb91883113" config-ref="AmazonDBEndpoint">
-					<http:uri-params ><![CDATA[#[output application/java
+		<flow-ref doc:name="callUpdateItem" doc:id="43d1c373-eaa7-42ad-a240-cfb307eb73d9" name="updateItem(Put)"/>
+		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="c75ddde9-bcbc-4a64-9e4c-8494f6b4d046">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
 ---
 {
-	itemID : attributes.uriParams.'item_id'
-}]]]></http:uri-params>
-				</http:request>
-			</when>
-			<otherwise >
-				<http:request method="GET" doc:name="getFromBestBuy" doc:id="f713179c-5461-4460-98e4-ccbeba2164a3" config-ref="BestBuyDBEndpoint">
-					<http:uri-params ><![CDATA[#[output application/java
+  message: "Item has been updated"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="delete:\item\(item_id):shopping-bazar-pro-config">
+        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" doc:id="dd43229d-4afa-42a4-b364-bccf14f4f3a4">
+            <ee:variables>
+                <ee:set-variable variableName="item_id"><![CDATA[%dw 2.0
+output application/json
 ---
-{
-	itemID : attributes.uriParams.'item_id'
-}]]]></http:uri-params>
-				</http:request>
-			</otherwise>
-		</choice>
-		<logger level="DEBUG" doc:name="Payload Details [Debug]" doc:id="3923a07b-4a20-46c1-a231-8b33a1ec77e0" message="#[payload]"/>
-		<logger level="INFO" doc:name="endGetItemByID" doc:id="776d6624-0866-4edd-979b-bbf5a6bf2b88" message="End of GetItemByID."/>
-	</flow>
-	<flow name="updateItem(Put)" doc:id="100b8383-1f0a-4fc7-9c9c-b848da4a9327" >
-		<logger level="INFO" doc:name="beginPutItem" doc:id="da7f3108-3c2b-42d3-8ba5-fe3ea5d9ed8a" message="Begin of put item flow."/>
-		<choice doc:name="Choice" doc:id="824539bc-6996-4ab1-a1c9-d51f8412e824" >
-			<when expression="ItemID &gt;=100" >
-				<http:request method="PUT" doc:name="putOnAmazon" doc:id="a7709f38-589f-42e7-8015-245696c9caa6" config-ref="AmazonDBEndpoint" >
-					<http:uri-params ><![CDATA[#[output application/java
+message.attributes.uriParams.'item_id' as Number]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+		<flow-ref doc:name="callRemoveItem" doc:id="0418cae2-26eb-4d15-b7f2-abd4bf5c7d5c" name="removeItem(Delete)"/>
+		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="4ce4aacb-0fab-4c14-b2ad-24a28fa397b3">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
 ---
-{
-	itemID : attributes.uriParams.'item_id'
-}]]]></http:uri-params>
-				</http:request>
-			</when>
-			<otherwise >
-				<http:request method="PUT" doc:name="putOnBestBuy" doc:id="9747b5c9-3452-4722-8573-ec63990d1672" config-ref="BestBuyDBEndpoint" >
-					<http:uri-params ><![CDATA[#[output application/java
+"Item has been deleted"]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\item\(item_id):shopping-bazar-pro-config">
+        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" doc:id="56ac4f8f-c317-4beb-9096-1e322ec6da73">
+            <ee:variables>
+                <ee:set-variable variableName="item_id"><![CDATA[%dw 2.0
+output application/json
 ---
-{
-	itemID : attributes.uriParams.'item_id'
-}]]]></http:uri-params>
-				</http:request>
-			</otherwise>
-		</choice>
-		<logger level="DEBUG" doc:name="Payload Details [Debug]" doc:id="4e9d4381-3020-4575-aa25-71d7459e87f5" message="#[payload]"/>
-		<logger level="INFO" doc:name="endPutItem" doc:id="06edd3bc-41a7-4b81-b909-eb1408add251" message="End of Put item flow."/>
-	</flow>
-	<flow name="removeItem(Delete)" doc:id="86cb8fbb-f85d-435d-a37e-aaca27871833" >
-		<logger level="INFO" doc:name="beginDeleteItem" doc:id="fdaf6130-aa2a-4bf0-80b2-3afc0905016a" message="Starting of delete item."/>
-		<choice doc:name="Choice" doc:id="f407e36f-6241-47a9-9cc5-fd9aa6b0c3dc" >
-			<when expression="ItemID &gt;=100" >
-				<http:request method="DELETE" doc:name="deleteFromAmazon" doc:id="e1b226fe-ae3d-42f8-9391-bf39e7722a67" config-ref="AmazonDBEndpoint" >
-					<http:uri-params ><![CDATA[#[output application/java
+message.attributes.uriParams.'item_id' as Number]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+		<flow-ref doc:name="callGetItemByID" doc:id="82b90742-bce9-43a4-91f7-7c408c5846a0" name="getItemByID"/>
+		<logger level="INFO" message="get:\item\(item_id):shopping-bazar-pro-config" />
+    </flow>
+    <flow name="post:\item\(item_id):shopping-bazar-pro-config">
+        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" doc:id="e1f0db2c-273c-4cf7-8b6b-b43003e7da47">
+            <ee:variables>
+                <ee:set-variable variableName="item_id"><![CDATA[%dw 2.0
+output application/json
 ---
-{
-	itemID : attributes.uriParams.'item_id'
-}]]]></http:uri-params>
-				</http:request>
-			</when>
-			<otherwise >
-				<http:request method="DELETE" doc:name="deleteFromBestBuy" doc:id="f9ec94a9-9b76-4691-bbf0-3e0778a0a5d0" config-ref="BestBuyDBEndpoint" >
-					<http:uri-params ><![CDATA[#[output application/java
----
-{
-	itemID : attributes.uriParams.'item_id'
-}]]]></http:uri-params>
-				</http:request>
-			</otherwise>
-		</choice>
-		<logger level="INFO" doc:name="Payload Details [Debug]" doc:id="46532a84-79ea-470b-8948-c893e8553c66" />
-		<logger level="INFO" doc:name="endDeleteItem" doc:id="8d14e81f-435f-42f9-9553-1dddaee339b2" message="End of delete item flow."/>
-	</flow>
-	<flow name="addNewItem(Post)" doc:id="3b909061-f6e5-4b1a-869a-ae9e91e70eb0" >
-		<logger level="INFO" doc:name="beginAddNewItem" doc:id="538e220f-5ea6-4387-89c7-a499f03af39b" message="Starting to add a new item."/>
-		<choice doc:name="Choice" doc:id="0cda254b-6283-42ad-8324-43e555df55a6">
-			<when expression="#[attributes.uriParams.'item_id' &gt;=100]">
-				<http:request method="POST" doc:name="addNewItemToAmazon" doc:id="59035ce6-be41-4bab-a97c-dabf0e890701" config-ref="AmazonDBEndpoint" >
-					<http:uri-params ><![CDATA[#[output application/java
----
-{
-	itemID : attributes.uriParams.'item_id'
-}]]]></http:uri-params>
-				</http:request>
-			</when>
-			<otherwise>
-				<http:request method="POST" doc:name="addNewItemToBestBuy" doc:id="62f60141-cdf7-421c-b51a-279f059ffacf" config-ref="BestBuyDBEndpoint" >
-					<http:uri-params ><![CDATA[#[output application/java
----
-{
-	itemID : attributes.uriParams.'item_id'
-}]]]></http:uri-params>
-				</http:request>
-			</otherwise>
-		</choice>
-		<logger level="DEBUG" doc:name="Payload Details [Debug]" doc:id="24f5c66c-81fd-4064-b9ba-a9d135e9f702" message="#[payload]"/>
-		<logger level="INFO" doc:name="endAddNewItem" doc:id="a7de535d-13f0-4cec-ad9e-c4ae397023ef" message="End of Add new item flow."/>
-	</flow>
-</mule>
+message.attributes.uriParams.'item_id' as Number]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+		<flow-ref doc:name="callAddNewItem" doc:id="87674d2e-55eb-4970-92ca-05506fbf2967" name="addNewItem(Post)"/>
+		<logger level="INFO" message="post:\item\(item_id):shopping-bazar-pro-config" />
+    </flow>
+	<flow name="get:\search\items:shopping-bazar-pro-config">
+        <flow-ref doc:name="Flow Reference" doc:id="da511d48-d6dd-4269-8fc1-9f795eaf1005" name="getAllItems"/>
+		<logger level="INFO" message="get:\search\items:shopping-bazar-pro-config" />
+    </flow>
+	</mule>

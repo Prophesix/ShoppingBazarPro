@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<http:request-config name="AmazonDBEndpoint" doc:name="HTTP Request configuration" doc:id="2a6c6037-1def-45ad-a797-d2d5bcbbe1e0" >
+		<http:request-connection port="8091" host="${http.host}"/>
+	</http:request-config>
+	<http:request-config name="BestBuyDBEndpoint" doc:name="HTTP Request configuration" doc:id="90d7a300-b6b8-41f1-a686-0717c01837c9" >
+		<http:request-connection port="8092" host="${http.host}"/>
+	</http:request-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="3808ac22-1535-479e-8160-1748f6a6a4a8" file="config-local.yaml" />
+	<error-handler name="GlobalError_Handler" doc:id="b106ea2e-2a7e-4094-8d5b-722d9f9c1cd8" >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="be2af18a-6cb4-47ef-bdd6-25ccc4b61a0d" type="Bazar:InvalidItemPrice">
+			<logger level="ERROR" doc:name="Logger" doc:id="8a1165d5-1c33-435b-9811-26b4d3c66db4" />
+		</on-error-propagate>
+	</error-handler>
+</mule>

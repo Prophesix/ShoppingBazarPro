@@ -2,18 +2,19 @@
 title: Shopping Bazar Pro
 version: 1.0
 baseUri: api
-types:
- # Fullinventory: !include datatypes/FullInventory.raml
-
+uses:
+  common:
+    /exchange_modules/82915fac-aca8-4c8a-8d0b-8344c8524078/common/1.0.2/common.raml
+    
 /search/items:
-  get:
+   get:
     displayName: Search all items
     description: Get all inventory items regardless of what store the it belongs to.
     responses:
       200:
        body:
           application/json: 
-#           type: Fullinventory[]
+            type: common.shoppingItemType[]
 /item/{item_id}:
       get:
         displayName: Get Item
@@ -22,10 +23,13 @@ types:
           200:
             body:
               application/json: 
-   #             type: Fullinventory
+                 type: common.shoppingItemType
       put:
         displayName:  Update Item
         description:  Update existing item
+        body:
+          application/json:
+            type: common.shoppingItemType
         responses:
           201:
             body:
@@ -45,7 +49,8 @@ types:
         displayName: Add Item
         description: Create a new item for a given store.
         body:
-          application/json:             
+          application/json:
+            type: common.shoppingItemType             
         responses:
           201:
             body:
