@@ -6,6 +6,30 @@
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">	
+	<flow name="getAllItems" doc:id="b76bc06e-6087-4c56-b773-61bab38ca572">
+		<logger level="INFO" doc:name="beginGetAllItemsFlow" doc:id="701baf43-4946-4a96-a7c7-d17a2404478d" message="Starting GetAllItems flow." />
+		<scatter-gather doc:name="Scatter-Gather" doc:id="8da93970-cb69-4834-89fa-4514c93d6402" target="payload">
+			<route>
+				<http:request method="GET" doc:name="getBestBuyJSONFormat" doc:id="2e71df80-c7dc-4f54-a136-4b6f3aaf6f43" config-ref="BestBuyDBEndpoint" sendCorrelationId="ALWAYS" path="/" outputMimeType="application/json">
+				</http:request>
+			</route>
+			<route>
+				<http:request method="GET" doc:name="getAmazonXMLFormat" doc:id="dcd0024b-013f-4c18-967b-3c2574b5ee24" config-ref="AmazonDBEndpoint" sendCorrelationId="ALWAYS" path="/" outputMimeType="application/xml">
+				</http:request>
+			</route>
+		</scatter-gather>
+		<logger level="DEBUG" doc:name="Payload Details [Debug]" doc:id="e30e86a9-32db-4522-a41f-3f212143dac8" message="#[payload]" />
+		<ee:transform doc:name="Transform Message" doc:id="8dd33b81-d8b7-4265-ad80-806f7f3c2bb3">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+flatten (payload..payload1)]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="DEBUG" doc:name="Payload Details [Debug]" doc:id="53f262f0-c0b4-437a-aec8-63cc76abc5f9" message="#[payload]" />
+		<logger level="INFO" doc:name="endGetAllItems" doc:id="fa75ba45-0eec-4c9f-8069-27780ffd9c10" message="Ending GetAllItems flow." />
+	</flow>
 	<flow name="updateItem(Put)" doc:id="100b8383-1f0a-4fc7-9c9c-b848da4a9327">
 		<logger level="INFO" doc:name="beginPutItem" doc:id="da7f3108-3c2b-42d3-8ba5-fe3ea5d9ed8a" message="Begin of put item flow." />
 		<validation:is-true doc:name="itemPrice &lt; 2000" doc:id="dfd9487e-09fd-4975-b02d-0eabf1d5796f" expression="#[paylaod.itemPrice &lt; 2000]" message='#["Price provided is too high, price provided: " ++ payload.itemPrice as Number]'>
@@ -83,30 +107,6 @@ http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mu
 		</choice>
 		<logger level="DEBUG" doc:name="Payload Details [Debug]" doc:id="3923a07b-4a20-46c1-a231-8b33a1ec77e0" message="#[payload]" />
 		<logger level="INFO" doc:name="endGetItemByID" doc:id="776d6624-0866-4edd-979b-bbf5a6bf2b88" message="End of GetItemByID." />
-	</flow>
-	<flow name="getAllItems" doc:id="b76bc06e-6087-4c56-b773-61bab38ca572">
-		<logger level="INFO" doc:name="beginGetAllItemsFlow" doc:id="701baf43-4946-4a96-a7c7-d17a2404478d" message="Starting GetAllItems flow."/>
-		<scatter-gather doc:name="Scatter-Gather" doc:id="8da93970-cb69-4834-89fa-4514c93d6402" >
-			<route >
-				<http:request method="GET" doc:name="getBestBuyJSONFormat" doc:id="2e71df80-c7dc-4f54-a136-4b6f3aaf6f43" config-ref="BestBuyDBEndpoint" sendCorrelationId="ALWAYS" path="/">
-				</http:request>
-			</route>
-			<route >
-				<http:request method="GET" doc:name="getAmazonXMLFormat" doc:id="dcd0024b-013f-4c18-967b-3c2574b5ee24" config-ref="AmazonDBEndpoint" sendCorrelationId="ALWAYS" path="/">
-				</http:request>
-			</route>
-		</scatter-gather>
-		<logger level="DEBUG" doc:name="Payload Details [Debug]" doc:id="e30e86a9-32db-4522-a41f-3f212143dac8" message="#[payload]"/>
-		<ee:transform doc:name="Transform Message" doc:id="8dd33b81-d8b7-4265-ad80-806f7f3c2bb3" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
----
-flatten (payload..payload1)]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<logger level="DEBUG" doc:name="Payload Details [Debug]" doc:id="53f262f0-c0b4-437a-aec8-63cc76abc5f9" message="#[payload]"/>
-		<logger level="INFO" doc:name="endGetAllItems" doc:id="fa75ba45-0eec-4c9f-8069-27780ffd9c10" message="Ending GetAllItems flow."/>
 	</flow>
 	<flow name="removeItem(Delete)" doc:id="86cb8fbb-f85d-435d-a37e-aaca27871833" >
 		<logger level="INFO" doc:name="beginDeleteItem" doc:id="fdaf6130-aa2a-4bf0-80b2-3afc0905016a" message="Starting of delete item."/>
