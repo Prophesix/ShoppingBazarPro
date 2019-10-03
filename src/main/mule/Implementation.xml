@@ -5,27 +5,6 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-	<flow name="put:\item\(item_id):shopping-bazar-pro-config">
-		<ee:transform doc:name="Transform Message" doc:id="139b9e69-0ee6-4aef-a2ca-712baf954b55" >
-			<ee:message >
-				<ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-message.attributes.uriParams.'item_id' as Number]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<flow-ref doc:name="callUpdateItem" doc:id="43d1c373-eaa7-42ad-a240-cfb307eb73d9" name="updateItem(Put)"/>
-		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="c75ddde9-bcbc-4a64-9e4c-8494f6b4d046">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  message: "Item has been updated"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
-    </flow>
     <flow name="delete:\item\(item_id):shopping-bazar-pro-config">
         <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" doc:id="dd43229d-4afa-42a4-b364-bccf14f4f3a4">
             <ee:variables>
@@ -45,7 +24,28 @@ output application/json
             </ee:message>
         </ee:transform>
     </flow>
-    <flow name="get:\item\(item_id):shopping-bazar-pro-config">
+    <flow name="put:\item\(item_id):shopping-bazar-pro-config">
+		<ee:transform doc:name="Transform Message" doc:id="139b9e69-0ee6-4aef-a2ca-712baf954b55">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+message.attributes.uriParams.'item_id' as Number]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<flow-ref doc:name="callUpdateItem" doc:id="43d1c373-eaa7-42ad-a240-cfb307eb73d9" name="updateItem(Put)" />
+		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="c75ddde9-bcbc-4a64-9e4c-8494f6b4d046">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  message: "Item has been updated"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+	<flow name="get:\item\(item_id):shopping-bazar-pro-config">
         <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" doc:id="56ac4f8f-c317-4beb-9096-1e322ec6da73">
             <ee:variables>
                 <ee:set-variable variableName="item_id"><![CDATA[%dw 2.0
